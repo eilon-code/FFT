@@ -30,9 +30,6 @@ public:
         Polynomial poly = FFT::ifft(freqComponents);
         return polynomialToSamples(poly);
     }
-    
-    // Example: Simple frequency filter (zero out frequencies outside [low, high] range)
-    static std::vector<Complex> frequencyBandPassFilter(const std::vector<Complex>& freqComponents, int low, int high);
 };
 
 #endif // SOUND_TOOL_H
