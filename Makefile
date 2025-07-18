@@ -1,53 +1,58 @@
-# Compiler
-CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -O2 -Isrc
+# Compiler and flags
+CXX := g++
+CXXFLAGS := -std=c++11 -Wall
 
 # Directories
-SRC_DIR = src
-TEST_DIR = tests
-BUILD_DIR = build
-BIN_DIR = bin
+CODE_DIR := src
+TEST_DIR := tests
+BUILD_DIR := build
+BIN_DIR := bin
 
-# Source Subdirectories
-SRC_SUBDIRS = $(SRC_DIR)/complex_numbers $(SRC_DIR)/polynomials
-TEST_SUBDIRS = $(TEST_DIR)/complex_tests $(TEST_DIR)/polynomial_tests $(TEST_DIR)/fft_tests
+# Find source and header files
+CODE_SRCS := $(shell find $(CODE_DIR) -name "*.cpp")
+CODE_HDRS := $(shell find $(CODE_DIR) -name "*.h")
+TEST_SRCS := $(shell find $(TEST_DIR) -name "*.cpp")
+TEST_HDRS := $(shell find $(TEST_DIR) -name "*.h")
 
-# Source Files
-SRC_FILES = $(SRC_SUBDIRS)/Complex.cpp \
-            $(SRC_SUBDIRS)/Polynomial.cpp \
-            $(SRC_DIR)/FFT.cpp
+# Objects from src/
+CODE_OBJS := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(CODE_SRCS))
 
-# Test Files
-TEST_FILES = $(TEST_SUBDIRS)/test_complex_1.cpp \
-             $(TEST_SUBDIRS)/test_polynomial_1.cpp \
-             $(TEST_SUBDIRS)/test_fft_1.cpp \
-             $(TEST_DIR)/test.cpp
+# Objects from tests/ — each becomes a standalone test
+TEST_BINS := $(patsubst $(TEST_DIR)/%.cpp, $(BIN_DIR)/%, $(TEST_SRCS))
 
-# Object Files
-OBJ_FILES = $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(SRC_FILES) $(TEST_FILES))
+# Include directories
+INCLUDES := $(shell find $(CODE_DIR) $(TEST_DIR) -type d)
+CXXFLAGS += $(foreach d, $(INCLUDES), -I$d)
 
-# Executable
-TARGET = $(BIN_DIR)/run_tests
-
-.PHONY: all run clean
+# Phony targets
+.PHONY: all clean run_tests
 
 # Default target
-all: $(TARGET)
+all: $(TEST_BINS)
 
-# Linking
-$(TARGET): $(OBJ_FILES)
-	@mkdir -p $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) $^ -o $@
-
-# Compiling .cpp to .o
+# Build object files from code
 $(BUILD_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Run the program
-run: $(TARGET)
-	./$(TARGET)
+# Link test executables
+$(BIN_DIR)/%: $(BUILD_DIR)/$(TEST_DIR)/%.o $(CODE_OBJS)
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
-# Clean everything
+# Compile test sources
+$(BUILD_DIR)/$(TEST_DIR)/%.o: $(TEST_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Run all tests
+run_tests: all
+	@echo "Running all tests:"
+	@for test in $(TEST_BINS); do \
+		echo "[Running $$test]"; \
+		./$$test || exit 1; \
+	done
+
+# Clean build
 clean:
 	rm -rf $(BUILD_DIR) $(BIN_DIR)
