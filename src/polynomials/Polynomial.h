@@ -4,12 +4,18 @@
 #include <vector>
 #include <complex_numbers/Complex.h>
 
+class Polynomial;
+
+namespace FFT {
+    Polynomial multiplyPolynomials(const Polynomial&, const Polynomial&);
+}
+
 class Polynomial {
 public:
     Polynomial(); // Zero polynomial
     Polynomial(const std::vector<Complex>& coeffs); // Initialize from coefficients
     Polynomial(std::vector<Complex>&& coeffs); // direct references (no copy of coefficients)
-    
+
     Polynomial(const Polynomial& other) = default;
     Polynomial& operator=(const Polynomial& other) = default;
 
@@ -32,10 +38,8 @@ public:
     Polynomial operator*(double scalar) const;
     Polynomial& operator/=(double scalar);
     Polynomial operator/(double scalar) const;
-    
-    Polynomial operator*(const Polynomial& other) const {
-        return FFT::multiplyPolynomials(*this, other);
-    }
+
+    Polynomial operator*(const Polynomial& other) const;
     void print() const;
 private:
     std::vector<Complex> m_coeffs; // Coefficients, m_coeffs[i] is x^i

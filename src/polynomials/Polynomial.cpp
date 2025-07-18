@@ -1,6 +1,6 @@
-#include "Polynomial.h"
 #include <iostream>
 #include <cassert>
+#include "Polynomial.h"
 
 Polynomial::Polynomial() : m_coeffs(1, Complex(0, 0)) {}
 
@@ -48,7 +48,7 @@ const Complex& Polynomial::operator[](int index) const {
 }
 
 Complex& Polynomial::operator[](int index) {
-    assert(index >= 0 && index < m_coeffs.size());
+    assert(index >= 0 && index < (int) m_coeffs.size());
     return m_coeffs[index];
 }
 
@@ -118,18 +118,7 @@ Polynomial Polynomial::operator/(double scalar) const {
 }
 
 Polynomial Polynomial::operator*(const Polynomial& other) const {
-    int newSize = this->size() + other.size() - 1;
-    std::vector<Complex> resultCoeffs(newSize, Complex(0, 0));
-
-    for (int i = 0; i < this->size(); ++i) {
-        for (int j = 0; j < other.size(); ++j) {
-            resultCoeffs[i + j] = resultCoeffs[i + j] + ((*this)[i] * other[j]);
-        }
-    }
-
-    Polynomial result(resultCoeffs);
-    result.trim();
-    return result;
+    return FFT::multiplyPolynomials(*this, other);
 }
 
 void Polynomial::print() const {

@@ -1,5 +1,5 @@
-#include "Complex.h"
 #include <cmath>
+#include "Complex.h"
 
 Complex::Complex(double real, double imag) : m_real(real), m_imaginary(imag) {}
 Complex::Complex(double real) : m_real(real), m_imaginary(0.0) {}
@@ -103,11 +103,13 @@ Complex Complex::fromPolar(double magnitude, double angle) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Complex& c) {
-    if (std::abs(c.m_imaginary) < Complex::EPSILON)
-        os << c.m_real;
-    else if (std::abs(c.m_real) < Complex::EPSILON)
-        os << c.m_imaginary << "i";
+    double x = Utils::round_d_digits(c.Re(), 2);
+    double y = Utils::round_d_digits(c.Im(), 2);
+    if (std::abs(x) < Utils::EPSILON)
+        os << x;
+    else if (std::abs(x) < Utils::EPSILON)
+        os << y << "i";
     else
-        os << c.m_real << (c.m_imaginary >= 0 ? " + " : " - ") << std::abs(c.m_imaginary) << "i";
+        os << x << (y >= 0 ? " + " : " - ") << std::abs(y) << "i";
     return os;
 }

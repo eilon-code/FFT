@@ -1,12 +1,12 @@
-#include "FFT.h"
 #include <cassert>
+#include "FFT.h"
+#include "../utils/utils.h"
 
-const double PI = acos(-1);
 std::vector<Complex> FFT::fft(const Polynomial &A, int n) {
-    assert(n > A.degree() && is_power_of(n,2));
+    assert(n > A.degree() && Utils::is_power_of(n,2));
     Polynomial padded = A;
     padded.resize(n); // zero padding
-    Complex omega = Complex::fromPolar(1, 2 * PI / n);
+    Complex omega = Complex::fromPolar(1, 2 * Utils::PI / n);
 
     // the FFT results the vector result:
     //  
@@ -119,10 +119,10 @@ Polynomial FFT::ifft(const std::vector<Complex> &values) {
 
 
     int n = values.size();
-    assert(is_power_of(n,2));
+    assert(Utils::is_power_of(n,2));
     Polynomial V(values);
 
-    Complex omega = Complex::fromPolar(1, 2 * PI / n);
+    Complex omega = Complex::fromPolar(1, 2 * Utils::PI / n);
     Complex omegaConjugate = omega.conjugate();
     std::vector<Complex> result = recursive_fft(V, n, omegaConjugate);
     Polynomial A = Polynomial(result);
@@ -146,12 +146,4 @@ Polynomial FFT::multiplyPolynomials(const Polynomial &A, const Polynomial &B)
         C_values[i] = A_values[i] * B_values[i]; // C(x) = A(x) * B(x), for each x mentioned above
     }
     return ifft(C_values);
-}
-
-bool is_power_of(int n, int base) {
-    int x = 1;
-    while (n > x) {
-        x *= base;
-    }
-    return (x == n);
 }

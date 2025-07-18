@@ -2,14 +2,14 @@
 #define COMPLEX_H
 
 #include <iostream>
+#include "../utils/utils.h"
 
 class Complex {
 public:
     explicit Complex(double real = 0, double imag = 0);
     Complex(double real); // Implicit conversion from double
-    Complex(const Complex&) = default; // Copy Constructor
 
-    Complex(const Complex& other) = default;
+    Complex(const Complex& other) = default; // Copy Constructor
     Complex& operator=(const Complex& other) = default;
 
     Complex& operator+=(const Complex& other);
@@ -27,10 +27,8 @@ public:
     Complex& operator/=(const Complex& other);
     Complex operator/(const Complex& other) const;
 
-    static constexpr double EPSILON = 1e-9;
-
     bool operator==(const Complex& other) const {
-        return equalsWithTolerance(other, EPSILON);
+        return equalsWithTolerance(other, Utils::EPSILON);
     }
 
     double magnitude() const;
