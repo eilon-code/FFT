@@ -103,8 +103,8 @@ Complex Complex::fromPolar(double magnitude, double angle) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Complex& c) {
-    double x = Utils::round_d_digits(c.Re(), 2);
-    double y = Utils::round_d_digits(c.Im(), 2);
+    double x = Utils::roundToPrecision(c.Re(), 2);
+    double y = Utils::roundToPrecision(c.Im(), 2);
     if (std::abs(x) < Utils::EPSILON)
         os << x;
     else if (std::abs(x) < Utils::EPSILON)

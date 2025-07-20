@@ -3,7 +3,7 @@
 #include "../utils/utils.h"
 
 std::vector<Complex> FFT::fft(const Polynomial &A, int n) {
-    assert(n > A.degree() && Utils::is_power_of(n,2));
+    assert(n > A.degree() && Utils::isPowerOf(n,2));
     Polynomial padded = A;
     padded.resize(n); // zero padding
     Complex omega = Complex::fromPolar(1, 2 * Utils::PI / n);
@@ -119,7 +119,7 @@ Polynomial FFT::ifft(const std::vector<Complex> &values) {
 
 
     int n = values.size();
-    assert(Utils::is_power_of(n,2));
+    assert(Utils::isPowerOf(n,2));
     Polynomial V(values);
 
     Complex omega = Complex::fromPolar(1, 2 * Utils::PI / n);
@@ -131,8 +131,7 @@ Polynomial FFT::ifft(const std::vector<Complex> &values) {
     return A;
 }
 
-Polynomial FFT::multiplyPolynomials(const Polynomial &A, const Polynomial &B)
-{
+Polynomial FFT::multiplyPolynomials(const Polynomial &A, const Polynomial &B) {
     int d = A.degree() + B.degree(); // the degree of the multiplication polynomial C(x) = A(x) * B(x)
     int n = 1;
     while (n <= d) {
