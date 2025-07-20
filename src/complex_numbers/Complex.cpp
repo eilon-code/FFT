@@ -113,3 +113,26 @@ std::ostream& operator<<(std::ostream& os, const Complex& c) {
         os << x << (y >= 0 ? " + " : " - ") << std::abs(y) << "i";
     return os;
 }
+
+
+std::vector<Complex> Complex::realToComplex(const std::vector<double> &values)
+{
+    std::vector<Complex> result;
+    result.reserve(values.size());
+    for (auto& val : values) {
+        result.emplace_back(val, 0.0);
+    }
+    return result;
+}
+
+std::pair<std::vector<double>, std::vector<double>> Complex::complexToReal(const std::vector<Complex> &values)
+{
+    std::pair<std::vector<double>, std::vector<double>> result;
+    result.first.reserve(values.size());
+    result.second.reserve(values.size());
+    for (auto& c : values) {
+        result.first.push_back(c.Re());
+        result.second.push_back(c.Im());
+    }
+    return result;
+}

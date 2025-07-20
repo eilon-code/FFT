@@ -6,29 +6,26 @@
 #include <polynomials/Polynomial.h>
 #include <FFT.h>
 
-class SoundTool {
-public:
-    // Convert raw audio samples (real doubles) to Polynomial of Complex numbers
-    // (the values of the samples will become the coefficients to the polynomial.)
-    static Polynomial samplesToPolynomial(const std::vector<double>& samples);
-
-    // Convert Polynomial back to real samples (discard imaginary part)
-    static std::vector<double> polynomialToSamples(const Polynomial& poly);
-
-    // Perform FFT on samples (pad size to power of two)
-    // (Encode the sound samples to phazor for each frequency)
-    static std::vector<Complex> performFFT(const std::vector<double>& samples) {
-        Polynomial poly = samplesToPolynomial(samples);
-        int n = 1;
-        while (n <= poly.degree()) n <<= 1; // next power of two
-        return FFT::fft(poly, n);
+namespace SoundTool {
+    // Perform DFT to get frequency domain from time domain samples
+    // (Encode the sound samples to the phazors for each frequency)
+    std::vector<Complex> computeFrequencySpectrum(const std::vector<double>& samples) {
+        std::vector<Complex> complexSamples = Complex::realToComplex(samples);
+        return FFT::DFT(complexSamples);
     }
 
-    // Perform IFFT to get time domain samples from frequency domain
+    // Perform IDFT to get time domain samples from frequency domain
     // (Decode the sound samples from the phazors for each frequency)
-    static std::vector<double> performIFFT(const std::vector<Complex>& freqComponents) {
-        Polynomial poly = FFT::ifft(freqComponents);
-        return polynomialToSamples(poly);
+    std::vector<double> reconstructSignalFromSpectrum(const std::vector<Complex>& freqComponents) {
+        std::vector<Complex> complexSamples = FFT::IDFT(freqComponents);
+        auto result = Complex::complexToReal(complexSamples);
+        for (double im : result.second) {
+            if (std::abs(im) > Utils::EPSILON) {
+                std::cerr << "Warning: significant imaginary component in reconstructed signal.\n";
+                break;
+            }
+        }
+        return result.first; // dismiss the imaginary parts
     }
 };
 

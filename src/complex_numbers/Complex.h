@@ -46,6 +46,9 @@ public:
         result *= scalar;
         return result / z;
     }
+
+    static std::vector<Complex> realToComplex(const std::vector<double>& values);
+    static std::pair<std::vector<double>,std::vector<double>> complexToReal(const std::vector<Complex>& values);
 private:
     double m_real, m_imaginary;
 
