@@ -11,13 +11,13 @@ namespace SoundTool {
     // (Encode the sound samples to the phazors for each frequency)
     std::vector<Complex> computeFrequencySpectrum(const std::vector<double>& samples) {
         std::vector<Complex> complexSamples = Complex::realToComplex(samples);
-        return FFT::DFT(complexSamples);
+        return FFT::dft(complexSamples);
     }
 
     // Perform IDFT to get time domain samples from frequency domain
     // (Decode the sound samples from the phazors for each frequency)
     std::vector<double> reconstructSignalFromSpectrum(const std::vector<Complex>& freqComponents) {
-        std::vector<Complex> complexSamples = FFT::IDFT(freqComponents);
+        std::vector<Complex> complexSamples = FFT::idft(freqComponents);
         auto result = Complex::complexToReal(complexSamples);
         for (double im : result.second) {
             if (std::abs(im) > Utils::EPSILON) {

@@ -169,7 +169,7 @@ Polynomial FFT::multiplyPolynomials(const Polynomial &A, const Polynomial &B) {
 // but omega is to the power of -1 which does not align with the fft...
 //
 // we will so compute p(t_k.conjugate()).conjugate() for each t_k
-std::vector<Complex> FFT::DFT(const std::vector<Complex> &samples, int N) {
+std::vector<Complex> FFT::dft(const std::vector<Complex> &samples, int N) {
     if (N == -1) N = Utils::ceilPowerOf(samples.size(), 2);
     assert(N >= samples.size());
     std::vector<Complex> conjSamples = samples;
@@ -181,7 +181,7 @@ std::vector<Complex> FFT::DFT(const std::vector<Complex> &samples, int N) {
 }
 
 // same as ifft (look at the matrix-comments), or same as fft with factor of 1/N
-std::vector<Complex> FFT::IDFT(const std::vector<Complex> &DFTvalues, int N) {
+std::vector<Complex> FFT::idft(const std::vector<Complex> &DFTvalues, int N) {
     if (N == -1) N = Utils::ceilPowerOf(DFTvalues.size(), 2);
     assert(N >= DFTvalues.size());
     Polynomial poly(DFTvalues);

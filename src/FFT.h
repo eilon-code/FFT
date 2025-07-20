@@ -12,8 +12,8 @@ namespace FFT {
     std::vector<Complex> recursive_fft(const Polynomial &A, int n, Complex& unitRoot);
     Polynomial multiplyPolynomials(const Polynomial& A, const Polynomial& B);
 
-    std::vector<Complex> DFT(const std::vector<Complex>& samples, int N=-1);
-    std::vector<Complex> IDFT(const std::vector<Complex>& DFTvalues, int N=-1);
+    std::vector<Complex> dft(const std::vector<Complex>& samples, int N=-1);
+    std::vector<Complex> idft(const std::vector<Complex>& DFTvalues, int N=-1);
 }
 
 #endif // FFT_H
