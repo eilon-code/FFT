@@ -9,7 +9,6 @@ print_centered_green() {
     local figlet_output=$(figlet "$msg")
 
     while IFS= read -r line; do
-        # Strip ANSI codes from length calculation
         local line_length=${#line}
         local padding=$(( (width - line_length) / 2 ))
         printf "%*s" "$padding" ""
@@ -21,8 +20,14 @@ clear
 print_centered_green "TEST Fast-Fourier Transform"
 echo
 echo "-------------------------------------"
-# Find all executable files in ./bin and subdirectories, then run them
-find ./bin -type f -executable | while read -r file; do
+
+total_tests=0
+failed_tests=0
+passed_tests=0
+
+# Use process substitution to avoid subshell for while loop
+while IFS= read -r file; do
+    ((total_tests++))
     echo -e "\033[1;33mRunning: $file\033[0m"
     start=$(date +%s.%N)
 
@@ -34,11 +39,23 @@ find ./bin -type f -executable | while read -r file; do
 
     if [ $exit_code -ne 0 ]; then
         echo -e "\033[1;31m❌ $file failed with exit code $exit_code\033[0m"
+        ((failed_tests++))
     else
         echo -e "\033[1;32m✅ $file passed\033[0m"
+        ((passed_tests++))
     fi
 
     echo -e "\033[0;36m⏱  Took ${runtime}s\033[0m"
     echo "-------------------------------------"
-done
+done < <(find ./bin -type f -executable)
 
+echo -e "\n\033[1;34mSummary:\033[0m"
+echo -e "✅ Passed: $passed_tests"
+echo -e "❌ Failed: $failed_tests"
+echo -e "🔬 Total:  $total_tests"
+
+if [ "$passed_tests" -eq "$total_tests" ]; then
+    echo -e "\n\033[1;42m🎉 All tests passed successfully! 🎉\033[0m"
+else
+    echo -e "\n\033[1;41m⚠ Some tests failed. Review the output above. ⚠\033[0m"
+fi
