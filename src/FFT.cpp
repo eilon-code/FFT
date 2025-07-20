@@ -146,3 +146,45 @@ Polynomial FFT::multiplyPolynomials(const Polynomial &A, const Polynomial &B) {
     }
     return ifft(C_values);
 }
+
+// Perform DFT on samples (pad size to power of two)
+// (Encode the sound samples to phazor for each frequency)
+//
+// Descrite Fourier transform:
+// 
+// X_k = Σ_{n=0}^{N-1} {x[n] * e^{-i*(2*pi*n*k/N)}}
+//
+// the same as:
+//
+// X_k = Σ_{n=0}^{N-1} {x[n] * e^{-i*(2*pi*k/N)}}^n
+//
+// so we could define:
+//
+// p(t) = Σ_{n=0}^{N-1} {x[n] * t^n}
+//
+// and we need to find p(t) for t ∈ {e^{-i*(2*pi*k/N)}}_{k=0}^{N-1}
+//
+// note that e^{-i*(2*pi*k/N)} = e^{-i*(2*pi/N)}^k = (omega_n)^{-k}
+// so this is the "same" calculation as FFT!!! (evaluating a polynomial at all n-roots of the unit circle)
+// but omega is to the power of -1 which does not align with the fft...
+//
+// we will so compute p(t_k.conjugate()).conjugate() for each t_k
+std::vector<Complex> FFT::DFT(const std::vector<Complex> &samples, int N) {
+    if (N == -1) N = Utils::ceilPowerOf(samples.size(), 2);
+    assert(N >= samples.size());
+    std::vector<Complex> conjSamples = samples;
+    for (auto& sample : conjSamples) sample = sample.conjugate();
+    Polynomial poly(conjSamples);
+    auto result = FFT::fft(poly, N);
+    for (auto& c : result) c = c.conjugate();  // Reverse direction
+    return result;
+}
+
+// same as ifft (look at the matrix-comments), or same as fft with factor of 1/N
+std::vector<Complex> FFT::IDFT(const std::vector<Complex> &DFTvalues, int N) {
+    if (N == -1) N = Utils::ceilPowerOf(DFTvalues.size(), 2);
+    assert(N >= DFTvalues.size());
+    Polynomial poly(DFTvalues);
+    poly /= N * 1.0;
+    return FFT::fft(poly, N);
+}

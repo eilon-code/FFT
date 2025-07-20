@@ -9,6 +9,7 @@ namespace Utils {
     static const double PI = std::acos(-1);
 
     bool isPowerOf(int n, int base);
+    int ceilPowerOf(int lowerBound, int base);
     double roundToPrecision(double num, int d);
 }
 

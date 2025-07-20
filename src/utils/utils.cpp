@@ -2,11 +2,16 @@
 
 bool Utils::isPowerOf(int n, int base)
 {
+    return n == ceilPowerOf(n, base);
+}
+
+int Utils::ceilPowerOf(int lowerBound, int base)
+{
     int x = 1;
-    while (n > x) {
+    while (lowerBound > x) {
         x *= base;
     }
-    return (x == n);
+    return x;
 }
 
 double Utils::roundToPrecision(double num, int d)
